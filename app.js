@@ -2,19 +2,14 @@
 let todoItems = [];
 
 function renderTodo(todo) {
-  // Select the first element with a class of `js-todo-list`
   const list = document.querySelector('.js-todo-list');
+  // select the current todo item in the DOM
+  const item = document.querySelector(`[data-key='${todo.id}']`);
 
-  // Use the ternary operator to check if `todo.checked` is true
-  // if so, assign 'done' to `isChecked`. Otherwise, assign an empty string
   const isChecked = todo.checked ? 'done': '';
-  // Create an `li` element and assign it to `node`
   const node = document.createElement("li");
-  // Set the class attribute
   node.setAttribute('class', `todo-item ${isChecked}`);
-  // Set the data-key attribute to the id of the todo
   node.setAttribute('data-key', todo.id);
-  // Set the contents of the `li` element created above
   node.innerHTML = `
     <input id="${todo.id}" type="checkbox"/>
     <label for="${todo.id}" class="tick js-tick"></label>
@@ -24,10 +19,16 @@ function renderTodo(todo) {
     </button>
   `;
 
-  // Append the element to the DOM as the last child of
-  // the element referenced by the `list` variable
-  list.append(node);
+  // If the item already exists in the DOM
+  if (item) {
+    // replace it
+    list.replaceChild(node, item);
+  } else {
+    // otherwise append it to the end of the list
+    list.append(node);
+  }
 }
+
 
 // This function will create a new todo object based on the
 // text that was entered in the text input, and push it into
@@ -41,6 +42,17 @@ function addTodo(text) {
 
   todoItems.push(todo);
   renderTodo(todo);
+}
+
+function toggleDone(key) {
+  // findIndex is an array method that returns the position of an element
+  // in the array.
+  const index = todoItems.findIndex(item => item.id === Number(key));
+  // Locate the todo item in the todoItems array and set its checked
+  // property to the opposite. That means, `true` will become `false` and vice
+  // versa.
+  todoItems[index].checked = !todoItems[index].checked;
+  renderTodo(todoItems[index]);
 }
 
 // Select the form element
@@ -59,5 +71,15 @@ form.addEventListener('submit', (event) => {
     addTodo(text);
     input.value = '';
     input.focus();
+  }
+});
+
+// Select the entire list
+const list = document.querySelector('.js-todo-list');
+// Add a click event listener to the list and its children
+list.addEventListener('click', event => {
+  if (event.target.classList.contains('js-tick')) {
+    const itemKey = event.target.parentElement.dataset.key;
+    toggleDone(itemKey);
   }
 });
