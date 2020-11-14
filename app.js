@@ -32,8 +32,6 @@ function renderTodo(todo) {
   }
 }
 
-
-
 // This function will create a new todo object based on the
 // text that was entered in the text input, and push it into
 // the `todoItems` array
