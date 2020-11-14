@@ -3,8 +3,14 @@ let todoItems = [];
 
 function renderTodo(todo) {
   const list = document.querySelector('.js-todo-list');
-  // select the current todo item in the DOM
   const item = document.querySelector(`[data-key='${todo.id}']`);
+
+  // add this if block
+  if (todo.deleted) {
+    // remove the item from the DOM
+    item.remove();
+    return
+  }
 
   const isChecked = todo.checked ? 'done': '';
   const node = document.createElement("li");
@@ -19,15 +25,13 @@ function renderTodo(todo) {
     </button>
   `;
 
-  // If the item already exists in the DOM
   if (item) {
-    // replace it
     list.replaceChild(node, item);
   } else {
-    // otherwise append it to the end of the list
     list.append(node);
   }
 }
+
 
 
 // This function will create a new todo object based on the
@@ -82,4 +86,24 @@ list.addEventListener('click', event => {
     const itemKey = event.target.parentElement.dataset.key;
     toggleDone(itemKey);
   }
+  function deleteTodo(key) {
+    // find the corresponding todo object in the todoItems array
+    const index = todoItems.findIndex(item => item.id === Number(key));
+    // Create a new object with properties of the current todo item
+    // and a `deleted` property which is set to true
+    const todo = {
+      deleted: true,
+      ...todoItems[index]
+    };
+    // remove the todo item from the array by filtering it out
+    todoItems = todoItems.filter(item => item.id !== Number(key));
+    renderTodo(todo);
+  }
+  
+   // add this `if` block
+   if (event.target.classList.contains('js-delete-todo')) {
+    const itemKey = event.target.parentElement.dataset.key;
+    deleteTodo(itemKey);
+  }
 });
+
